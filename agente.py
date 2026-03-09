@@ -1,41 +1,40 @@
 import pygame
-from math import sin, cos, radians
+import numpy as np
+from math import radians, sin, cos
 
-class EntidadMovil:
-    def __init__(self, pos_x, pos_y, escala, direccion_inicial=30):
-        self.posicion = pygame.Vector2(pos_x, pos_y)
-        self.radio = escala
-        self.direccion = direccion_inicial
 
-    def _calcular_puntos(self):
-        """
-        Genera los puntos rotados del triángulo en base
-        a la orientación actual.
-        """
+class NaveTriangular:
+    def __init__(self, px, py, escala_figura, orientacion=30):
+        self.pos = np.array([px, py], dtype=float)
+        self.escala = escala_figura
+        self.rotacion = orientacion
 
-        base_shape = [
-            pygame.Vector2(0, -self.radio),
-            pygame.Vector2(-self.radio / 2, self.radio / 2),
-            pygame.Vector2(self.radio / 2, self.radio / 2)
-        ]
+    def _modelo_local(self):
+        return np.array([
+            [0, -self.escala],
+            [-self.escala * 0.5, self.escala * 0.5],
+            [self.escala * 0.5, self.escala * 0.5]
+        ])
 
-        angulo_rad = radians(self.direccion)
+    def _matriz_rotacion(self):
+        ang = radians(self.rotacion)
+        return np.array([
+            [cos(ang), -sin(ang)],
+            [sin(ang),  cos(ang)]
+        ])
 
-        puntos_transformados = []
-        for punto in base_shape:
-            rotado = pygame.Vector2(
-                punto.x * cos(angulo_rad) - punto.y * sin(angulo_rad),
-                punto.x * sin(angulo_rad) + punto.y * cos(angulo_rad)
-            )
-            puntos_transformados.append(self.posicion + rotado)
+    def obtener_vertices(self):
+        figura = self._modelo_local()
+        giro = self._matriz_rotacion()
+        rotados = figura @ giro
+        trasladados = rotados + self.pos
+        return trasladados
 
-        return puntos_transformados
+    def pintar(self, lienzo, color_fig=(0,160,0), color_dir=(255,60,60)):
+        puntos = self.obtener_vertices()
 
-    def renderizar(self, superficie, color_principal=(0,150,0), color_punta=(255,0,0)):
-        vertices = self._calcular_puntos()
+        pygame.draw.polygon(lienzo, color_fig, puntos)
+        pygame.draw.polygon(lienzo, (255,255,255), puntos, 2)
 
-        pygame.draw.polygon(superficie, color_principal, vertices)
-        pygame.draw.polygon(superficie, (255,255,255), vertices, 2)
-
-        punta = vertices[0]
-        pygame.draw.circle(superficie, color_punta, (int(punta.x), int(punta.y)), 8)
+        punta = puntos[0]
+        pygame.draw.circle(lienzo, color_dir, (int(punta[0]), int(punta[1])), 9)

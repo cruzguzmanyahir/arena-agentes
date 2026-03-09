@@ -1,78 +1,80 @@
-# Proyecto – Simulación de Entidad Rotatoria
+# Simulación de Movimiento con Transformaciones 2D
 
-## Descripción General
+## Resumen
 
-Este proyecto implementa una entidad gráfica con forma triangular que puede:
+Este proyecto desarrolla una figura triangular interactiva que puede desplazarse y rotar dentro de una ventana gráfica.  
+El sistema incluye detección de colisiones contra los bordes y respuesta automática tipo rebote.
 
-- Rotar sobre su propio eje
-- Avanzar y retroceder según su orientación
-- Rebotar automáticamente al colisionar con los bordes de la ventana
-
-El desarrollo fue realizado utilizando la librería `pygame`.
+La implementación utiliza Python junto con la librería Pygame y operaciones matriciales con NumPy.
 
 ---
 
-## Estructura del Proyecto
+## Organización del Código
 
-### 1. agente.py
+### agente.py
 
-Contiene la clase `EntidadMovil`, encargada de:
+Define la clase `NaveTriangular`, responsable de:
 
-- Administrar posición mediante `pygame.Vector2`
-- Manejar la orientación en grados
-- Calcular la rotación del triángulo usando funciones trigonométricas
-- Dibujar el polígono rotado en pantalla
+- Gestionar posición y orientación
+- Construir la geometría local del triángulo
+- Aplicar rotación mediante matrices 2x2
+- Realizar traslación a coordenadas globales
+- Dibujar la figura y su indicador de dirección
 
-Se utiliza una transformación manual basada en seno y coseno para aplicar rotación sobre los vértices definidos localmente.
-
----
-
-### 2. main.py
-
-Gestiona:
-
-- Inicialización del entorno gráfico
-- Control del teclado
-- Movimiento y rotación
-- Detección de colisiones con bordes
-- Refresco de pantalla
-
-La lógica fue modularizada en funciones independientes:
-
-- `procesar_movimiento()`
-- `procesar_rotacion()`
-- `verificar_limites()`
-
-Esto mejora la legibilidad y organización del código.
+Se emplea multiplicación matricial para transformar los vértices.
 
 ---
 
-## Controles
+### main.py
 
-| Tecla | Acción |
-|-------|--------|
+Contiene la clase `Simulador`, que administra:
+
+- Ventana y ciclo principal
+- Lectura de teclado
+- Movimiento relativo a la orientación
+- Rotación angular
+- Validación de límites de pantalla
+- Actualización de renderizado
+
+El diseño es orientado a objetos para separar responsabilidades.
+
+---
+
+## Controles de Usuario
+
+| Tecla | Función |
+|------|---------|
 | W / ↑ | Avanzar |
 | S / ↓ | Retroceder |
-| A / ← | Rotar izquierda |
-| D / → | Rotar derecha |
+| A / ← | Giro antihorario |
+| D / → | Giro horario |
 
 ---
 
-## Comportamiento del Rebote
+## Sistema de Colisiones
 
-Cuando la entidad toca un borde:
+Al detectar contacto con los bordes:
 
-- Se corrige su posición
-- Se ajusta su ángulo de dirección
-- Se normaliza el ángulo en un rango de 0° a 360°
+- Se reajusta la posición al límite permitido
+- Se modifica el ángulo de movimiento
+- Se normaliza el valor angular
 
-Esto permite simular un rebote dinámico realista.
+Esto produce un efecto de rebote consistente.
 
 ---
 
-## Posibles Mejoras Futuras
+## Tecnologías Utilizadas
 
-- Implementar aceleración e inercia
-- Agregar múltiples entidades
-- Añadir detección de colisiones entre objetos
-- Incorporar disparos o interacción adicional
+- Python
+- Pygame
+- NumPy
+
+---
+
+## Posibles Extensiones
+
+- Física con aceleración
+- Multiples entidades simultáneas
+- Colisiones entre objetos
+- Sistema de proyectiles
+- Escenarios dinámicos
